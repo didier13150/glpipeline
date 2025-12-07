@@ -136,11 +136,6 @@ func main() {
 		pvardata.Key = keyval[0]
 		pvardata.Value = keyval[1]
 		data.Variables = append(data.Variables, pvardata)
-		json, err := json.MarshalIndent(pvardata, "", " ")
-		if err != nil {
-			log.Println(err)
-			return
-		}
 	}
 
 	json, err := json.Marshal(data)
