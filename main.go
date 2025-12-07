@@ -161,5 +161,9 @@ func main() {
 
 	glApi := gitlablib.NewGLApi(*gitlabUrl, token, *verboseMode)
 	ret, _, err := glApi.CallGitlabApi(uri, "POST", json)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	fmt.Print(string(ret))
 }
