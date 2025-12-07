@@ -1,7 +1,7 @@
 stages:
   - lint
   - test
-  # - build
+  - build
 
 lint-src:
   stage: lint
@@ -43,18 +43,18 @@ test-src:
     - docker tag ${DOCKER_REGISTRY}/${REGISTRY_PATH}/${CI_PROJECT_NAME}:${CI_COMMIT_REF_SLUG} ${DOCKER_REGISTRY}/${REGISTRY_PATH}/${CI_PROJECT_NAME}:latest
     - docker push --all-tags ${DOCKER_REGISTRY}/${REGISTRY_PATH}/${CI_PROJECT_NAME}
 
-# build-image-arm64v8:
-#   variables:
-#     REGISTRY_PATH: arm64v8
-#   extends:
-#     - .build-image
-#   tags:
-#     - arm64v8
-#
-# build-image-x86_64:
-#   variables:
-#     REGISTRY_PATH: x86_64
-#   extends:
-#     - .build-image
-#   tags:
-#     - x86_64
+build-image-arm64v8:
+  variables:
+    REGISTRY_PATH: arm64v8
+  extends:
+    - .build-image
+  tags:
+    - arm64v8
+
+build-image-x86_64:
+  variables:
+    REGISTRY_PATH: x86_64
+  extends:
+    - .build-image
+  tags:
+    - x86_64

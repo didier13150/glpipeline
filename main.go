@@ -136,14 +136,11 @@ func main() {
 		pvardata.Key = keyval[0]
 		pvardata.Value = keyval[1]
 		data.Variables = append(data.Variables, pvardata)
-		fmt.Println(pvardata)
 		json, err := json.MarshalIndent(pvardata, "", " ")
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		fmt.Println(pvardata.Key)
-		fmt.Print(string(json))
 	}
 
 	json, err := json.Marshal(data)
@@ -151,8 +148,6 @@ func main() {
 		log.Println(err)
 		return
 	}
-
-	fmt.Print(string(json))
 
 	uri := fmt.Sprintf("/api/v4/projects/%s/pipeline", *projectId)
 	if *verboseMode {
