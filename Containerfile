@@ -22,11 +22,10 @@ RUN cd build && \
 FROM scratch
 
 LABEL org.opencontainers.image.authors="Didier FABERT <didier.fabert@gmail.com>"
-LABEL eu.tartarefr.glcli.version=1.0.0
+LABEL eu.tartarefr.glpipeline.version=1.0.0
 
 COPY --from=build build/glpipeline /glpipeline
 COPY LICENSE /LICENSE
-COPY README.fr.md /README.fr.md
 COPY README.md /README.md
 
 ENTRYPOINT [ "/glpipeline" ]
