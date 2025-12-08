@@ -55,7 +55,7 @@ func main() {
 	var gitlabUrl = flag.String("url", getDefaultValue("GLCLI_GITLAB_URL", "https://gitlab.com"), "Gitlab URL.")
 	var gitlabTokenFile = flag.String("tokenfile", getDefaultValue("GLCLI_TOKEN_FILE", os.Getenv("HOME")+"/.gitlab.token"), "File which contains token to access Gitlab API.")
 	var remoteName = flag.String("remote", getDefaultValue("GLCLI_REMOTE_NAME", "origin"), "Git remote name.")
-	var branchName = flag.String("branch", "main", "Git branch.")
+	var branchName = flag.String("branch", "", "Git branch.")
 	var verboseMode = flag.Bool("verbose", false, "Make application more talkative.")
 	var debugMode = flag.Bool("debug", false, "Enable debug mode")
 	flag.Usage = func() {
@@ -100,6 +100,17 @@ func main() {
 	token := gitlablib.ReadFromFile(*gitlabTokenFile, "token", *verboseMode)
 	log.Printf("Token: %s", token)
 
+	if *branchName == "" {
+		if *projectId == "" {
+			head := gitlablib.ReadFromFile(".git/HEAD", "git head", *verboseMode)
+			ref := strings.Split(head, "/")[len(strings.Split(head, "/"))-1]
+			*branchName = ref
+			log.Printf("Current branch is %s", *branchName)
+		} else {
+			log.Fatal("Branch option must be specified when using id option.")
+		}
+	}
+
 	projectfile, err := os.OpenFile(*projectsFile, os.O_RDONLY, 0644)
 	if err == nil {
 		projects.ImportProjects(*projectsFile)
@@ -127,7 +138,6 @@ func main() {
 	}
 
 	var data GLPipelineData
-
 	data.Ref = *branchName
 
 	for _, envVar := range varList {
