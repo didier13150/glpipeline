@@ -24,6 +24,55 @@ type GLPipelineData struct {
 	Variables []GLPipelineVar `json:"variables"`
 }
 
+type GLPipelineReturnDetailedStatus struct {
+	Id           int    `json:"id"`
+	Icon         string `json:"icon"`
+	Text         string `json:"text"`
+	Label        string `json:"label"`
+	Group        string `json:"group"`
+	Tooltip      string `json:"tooltip"`
+	HasDetails   bool   `json:"has_details"`
+	DetailsPath  string `json:"details_path"`
+	Illustration string `json:"illustration"`
+	Favicon      string `json:"favicon"`
+}
+
+type GLPipelineReturnUser struct {
+	Id          int    `json:"id"`
+	Username    string `json:"username"`
+	PublicEmail string `json:"public_email"`
+	Name        string `json:"name"`
+	State       string `json:"state"`
+	Locked      bool   `json:"locked"`
+	AvatarUrl   string `json:"avatar_url"`
+	WebUrl      string `json:"web_url"`
+}
+
+type GLPipelineReturn struct {
+	Id             int                            `json:"id"`
+	IId            int                            `json:"iid"`
+	ProjectId      int                            `json:"project_id"`
+	Sha            string                         `json:"sha"`
+	Ref            string                         `json:"ref"`
+	Status         string                         `json:"status"`
+	Source         string                         `json:"source"`
+	CreatedAt      string                         `json:"created_at"`
+	UpdatedAt      string                         `json:"updated_at"`
+	WebUrl         string                         `json:"web_url"`
+	BeforeSha      string                         `json:"before_sha"`
+	Tag            bool                           `json:"tag"`
+	YamlError      bool                           `json:"yaml_errors"`
+	User           GLPipelineReturnUser           `json:"user"`
+	StartedAt      string                         `json:"started_at"`
+	FinishedAt     string                         `json:"finished_at"`
+	CommitedAt     string                         `json:"committed_at"`
+	Duration       int                            `json:"duration"`
+	QueueDuration  int                            `json:"queued_duration"`
+	Coverage       string                         `json:"coverage"`
+	DetailedStatus GLPipelineReturnDetailedStatus `json:"detailed_status"`
+	Archived       bool                           `json:"archived"`
+}
+
 // String is an implementation of the flag.Value interface
 func (i *arrayFlags) String() string {
 	return fmt.Sprintf("%v", *i)
@@ -58,6 +107,7 @@ func main() {
 	var branchName = flag.String("branch", "", "Git branch.")
 	var verboseMode = flag.Bool("verbose", false, "Make application more talkative.")
 	var debugMode = flag.Bool("debug", false, "Enable debug mode")
+	var dryrunMode = flag.Bool("dryrun", false, "Run in dry-run mode (read only).")
 	flag.Usage = func() {
 		fmt.Print("Run pipeline for current project\n\n")
 		fmt.Printf("Usage: " + os.Args[0] + " [options]\n")
@@ -70,6 +120,9 @@ func main() {
 	}
 	if *debugMode {
 		log.Print("Debug mode is active")
+	}
+	if *dryrunMode {
+		log.Print("Dry-run mode is active")
 	}
 	if projectIdFile != nil {
 		log.Printf("Project id file: %s", *projectIdFile)
@@ -148,7 +201,7 @@ func main() {
 		data.Variables = append(data.Variables, pvardata)
 	}
 
-	json, err := json.Marshal(data)
+	datajson, err := json.Marshal(data)
 	if err != nil {
 		log.Println(err)
 		return
@@ -159,11 +212,28 @@ func main() {
 		log.Printf("URI: %s", uri)
 	}
 
+	if *dryrunMode || *verboseMode {
+		fmt.Printf("Url: %s\n", *gitlabUrl+uri)
+		fmt.Printf("Data: %s\n", datajson)
+		if *dryrunMode {
+			return
+		}
+	}
 	glApi := gitlablib.NewGLApi(*gitlabUrl, token, *verboseMode)
-	ret, _, err := glApi.CallGitlabApi(uri, "POST", json)
+	retjson, _, err := glApi.CallGitlabApi(uri, "POST", datajson)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	fmt.Print(string(ret))
+	var ret GLPipelineReturn
+	err = json.Unmarshal(retjson, &ret)
+	if err != nil {
+		log.Println(err)
+		fmt.Print(string(retjson))
+		return
+	}
+	log.Printf("Pipeline %s: %s", ret.Status, ret.WebUrl)
+	if *verboseMode {
+		fmt.Print(string(retjson))
+	}
 }
