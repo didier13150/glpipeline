@@ -97,7 +97,7 @@ func main() {
 	var projects gitlablib.GitlabProject
 	var varList arrayFlags
 
-	flag.Var(&varList, "var", "Var for pipeline, this option can be specified more than one time.")
+	flag.Var(&varList, "var", "Var for pipeline, this option can be specified more than one time (-var \"KEY=VALUE\").")
 	var projectId = flag.String("id", "", "Gitlab project identifiant.")
 	var projectIdFile = flag.String("idfile", getDefaultValue("GLCLI_ID_FILE", ".gitlab.id"), "Gitlab project identifiant file.")
 	var projectsFile = flag.String("projectfile", getDefaultValue("GLCLI_PROJECT_FILE", os.Getenv("HOME")+"/.gitlab-projects.json"), "File which contains projects.")
