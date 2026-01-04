@@ -1,6 +1,14 @@
 # GLPipeline
 
+The application can use environment variables to simplify command-line options.
 
+| Variable              | Default value                 | Comments                                                        |
+| --------------------- | ----------------------------- | --------------------------------------------------------------- |
+| GLCLI_GITLAB_URL      | https://gitlab.com            | Gitlab URL                                                      |
+| GLCLI_TOKEN_FILE      | $HOME/.gitlab.token           | File which contains token                                       |
+| GLCLI_PROJECT_FILE    | $HOME/.gitlab.projects.json   | File which contains data about all projects                     |
+| GLCLI_ID_FILE         | .gitlab.id                    | File which contains current project identifiant                 |
+| GLCLI_REMOTE_NAME     | origin                        | Git remote name                                                 |
 
 ## Getting started
 
