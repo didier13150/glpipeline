@@ -21,8 +21,10 @@ test: build
 
 install:
 	@if [ $$(id -u) -eq 0 ] ; then \
-		mkdir -p /usr/local/bin ; \
-		cp $(APP_NAME) /usr/local/bin/ ; \
+		bindir="/usr/local/bin" ; \
+		if [ ! -z "$${BINDIR}" ] ; then bindir="$${BINDIR}" ; fi ; \
+		mkdir -p $${bindir} ; \
+		cp $(APP_NAME) $${bindir}/ ; \
 	else \
 		mkdir -p $${HOME}/.local/bin ; \
 		cp $(APP_NAME) $${HOME}/.local/bin/ ; \
