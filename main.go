@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/didier13150/gitlablib"
+	"github.com/didier13150/gllib"
 )
 
 type arrayFlags []string
@@ -94,7 +94,7 @@ func getDefaultValue(envVar string, defaultVar string) string {
 
 func main() {
 
-	var projects gitlablib.GitlabProject
+	var projects gllib.GitlabProject
 	var varList arrayFlags
 
 	flag.Var(&varList, "var", "Var for pipeline, this option can be specified more than one time (-var \"KEY=VALUE\").")
@@ -150,12 +150,12 @@ func main() {
 		log.Printf("Var: %s", envVar)
 	}
 
-	token := gitlablib.ReadFromFile(*gitlabTokenFile, "token", *verboseMode)
+	token := gllib.ReadFromFile(*gitlabTokenFile, "token", *verboseMode)
 	log.Printf("Token: %s", token)
 
 	if *branchName == "" {
 		if *projectId == "" {
-			head := gitlablib.ReadFromFile(".git/HEAD", "git head", *verboseMode)
+			head := gllib.ReadFromFile(".git/HEAD", "git head", *verboseMode)
 			ref := strings.Split(head, "/")[len(strings.Split(head, "/"))-1]
 			*branchName = ref
 			log.Printf("Current branch is %s", *branchName)
@@ -172,7 +172,7 @@ func main() {
 			log.Fatalln("Cannot close project file")
 		}
 		if *projectId == "" {
-			repoUrl := gitlablib.GetGitUrl(*remoteName, *verboseMode)
+			repoUrl := gllib.GetGitUrl(*remoteName, *verboseMode)
 			if *verboseMode {
 				log.Printf("Get git repository url for remote %s: %s", *remoteName, repoUrl)
 			}
@@ -219,7 +219,7 @@ func main() {
 			return
 		}
 	}
-	glApi := gitlablib.NewGLApi(*gitlabUrl, token, *verboseMode)
+	glApi := gllib.NewGLApi(*gitlabUrl, token, *verboseMode)
 	retjson, _, err := glApi.CallGitlabApi(uri, "POST", datajson)
 	if err != nil {
 		log.Println(err)
